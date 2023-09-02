@@ -20,16 +20,73 @@ namespace MvcBoard.Controllers
         }
 
         // GET: Boards
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string currentfilter, int? pageNumber)
         {
-            var boards = from b in _context.Board select b;
+            ViewData["CurrentSort"] = sortOrder;
+
+            if(searchString != null)
+            {
+                pageNumber = 1;
+            } else { searchString = currentfilter; }
+
+
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name" : "";
+            ViewData["LengthSortParm"] = sortOrder == "length" ? "length_desc" : "length";
+            ViewData["WidthSortParm"] = sortOrder == "width" ? "width_desc" : "width";
+            ViewData["ThicknessSortParm"] = sortOrder == "thickness" ? "thickness_desc" : "thickness";
+            ViewData["VolumeSortParm"] = sortOrder == "volume" ? "volume_desc" : "volume";
+            ViewData["PriceSortParm"] = sortOrder == "price" ? "price_desc" : "price";
+
+            var boards = from b in _context.Board
+                           select b;
+            switch (sortOrder)
+            {
+                case "name":
+                    boards = boards.OrderBy(b => b.Name);
+                    break;
+                case "length":
+                    boards = boards.OrderBy(b => b.Length);
+                    break;
+                case "length_desc":
+                    boards = boards.OrderByDescending(b => b.Length);
+                    break;
+                case "width":
+                    boards = boards.OrderBy(b => b.Width);
+                    break;
+                case "width_desc":
+                    boards = boards.OrderByDescending(b => b.Width);
+                    break;
+                case "thickness":
+                    boards = boards.OrderBy(b => b.Thickness);
+                    break;
+                case "thickness_desc":
+                    boards = boards.OrderByDescending(b => b.Thickness);
+                    break;
+                case "volume":
+                    boards = boards.OrderBy(b => b.Volume);
+                    break;
+                case "volume_desc":
+                    boards = boards.OrderByDescending(b => b.Volume);
+                    break;
+                case "price":
+                    boards = boards.OrderBy(b => b.Price);
+                    break;
+                case "price_desc":
+                    boards = boards.OrderByDescending(b => b.Price);
+                    break;
+                default:
+                    boards = boards.OrderBy(b => b.Name);
+                    break;
+            }
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                boards = boards.Where(s => s.Name!.Contains(searchString));
+                boards = boards.Where(b => b.Name!.Contains(searchString));
             }
 
-            return View(await boards.ToListAsync());
+            int pageSize = 5;
+            //return View(await boards.AsNoTracking().ToListAsync());
+            return View(await PaginatedList<Board>.CreateAsync(boards.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Boards/Details/5

@@ -37,6 +37,7 @@ namespace MvcBoard.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
 
+        //[DisplayFormat(NullDisplayText = "No Equipment")]
         [RegularExpression(@"^[A-Z]+[a-zA-Z,\s]*$", ErrorMessage = "The field Equipment can only contain letters, commas(,) and must start with a capital letter")]
         public string? Equipment { get; set; }
     }
