@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MvcBoard.Data;
 using MvcBoard.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace MvcBoard
 {
@@ -12,6 +13,10 @@ namespace MvcBoard
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<MvcBoardContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MvcBoardContext") ?? throw new InvalidOperationException("Connection string 'MvcBoardContext' not found.")));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                //.AddRoles<IdentityUser>()
+                .AddEntityFrameworkStores<MvcBoardContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -37,14 +42,17 @@ namespace MvcBoard
             app.UseStaticFiles();
 
             app.UseRouting();
+                        app.UseAuthentication();;
 
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Boards}/{action=Index}/{id?}");
 
             app.UseRequestLocalization("en_DK");
+
+            app.MapRazorPages();
 
             app.Run();
         }

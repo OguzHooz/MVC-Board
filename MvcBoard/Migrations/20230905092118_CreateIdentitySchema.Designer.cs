@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcBoard.Data;
 
@@ -11,9 +12,11 @@ using MvcBoard.Data;
 namespace MvcBoard.Migrations
 {
     [DbContext(typeof(MvcBoardContext))]
-    partial class MvcBoardContextModelSnapshot : ModelSnapshot
+    [Migration("20230905092118_CreateIdentitySchema")]
+    partial class CreateIdentitySchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
